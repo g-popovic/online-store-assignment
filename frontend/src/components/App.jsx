@@ -34,7 +34,8 @@ export default function App() {
 	function addToCart(product) {
 		if (cart.find(item => item._id === product._id) == null) {
 			setCart(prev => [...prev, { ...product, amount: 1 }]);
-		}
+			alert('Added.');
+		} else alert('Item already in cart.');
 	}
 
 	// Handle user changing the amount of a product in the cart
@@ -63,7 +64,10 @@ export default function App() {
 	if (userRole == null) return <LoginPage />;
 	return (
 		<Router>
-			<Navbar openPanel={() => setPanelOpen(true)} />
+			<Navbar
+				openPanel={() => setPanelOpen(true)}
+				isAdmin={userRole === 'admin'}
+			/>
 			{panelOpen && userRole === 'admin' ? (
 				<EditPanel
 					close={() => {

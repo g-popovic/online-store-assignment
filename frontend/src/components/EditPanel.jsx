@@ -9,10 +9,11 @@ export default function EditPanel(props) {
 	async function addProduct() {
 		try {
 			await axiosApp.post('/products/new', { name, price, imagePath });
-			props.close();
 		} catch (err) {
 			console.log(err);
+			alert('There was an unexpected error.');
 		}
+		props.close();
 	}
 
 	async function deleteProduct() {
@@ -21,11 +22,16 @@ export default function EditPanel(props) {
 	}
 
 	async function updateProduct() {
-		await axiosApp.post('/products/edit/' + props.id, {
-			name,
-			price,
-			imagePath
-		});
+		try {
+			await axiosApp.post('/products/edit/' + props.id, {
+				name,
+				price,
+				imagePath
+			});
+		} catch (err) {
+			console.log(err);
+			alert('There was an unexpected error.');
+		}
 		props.close();
 	}
 

@@ -1,8 +1,10 @@
 const router = require('express').Router();
 const Product = require('../models/productModel');
+const { authRole } = require('../middleware/authMiddleware');
+const { ROLES } = require('../config/userRoles');
 
 // Route for adding products to the database
-router.post('/new', async (req, res) => {
+router.post('/new', authRole(ROLES.ADMIN), async (req, res) => {
 	const newProduct = new Product({
 		name: req.body.name,
 		price: req.body.price,
@@ -17,7 +19,7 @@ router.post('/new', async (req, res) => {
 });
 
 // Route for deleting a product
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authRole(ROLES.ADMIN), async (req, res) => {
 	try {
 		await Product.findByIdAndDelete(req.params.id);
 		res.sendStatus(200);
@@ -34,7 +36,7 @@ router.get('/', async (req, res) => {
 });
 
 // Route for editing an existing product
-router.post('/edit/:id', async (req, res) => {
+router.post('/edit/:id', authRole(ROLES.ADMIN), async (req, res) => {
 	const { name, price, imagePath } = req.body;
 
 	// Verify that the new product details are valid

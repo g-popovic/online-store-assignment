@@ -1,18 +1,10 @@
 const router = require('express').Router();
-const User = require('../models/userModel');
+const Order = require('../models/orderModel');
 const Product = require('../models/productModel');
-
-// router.get('/', async (req, res) => {
-// 	res.send((await User.findById(req.user.id).populate().exec()).cart);
-// });
-
-// router.post('/', async (req, res) => {
-// 	await User.findByIdAndRemove(req.user.id, { cart: req.body.cart });
-// 	res.sendStatus(200);
-// });
+const { authUser } = require('../middleware/authMiddleware');
 
 // Path for buying products
-router.post('/purchase', async (req, res) => {
+router.post('/purchase', authUser, async (req, res) => {
 	const cart = req.body.cart;
 	const products = await Product.find({
 		_id: { $in: cart.map(item => item._id) }
@@ -23,7 +15,20 @@ router.post('/purchase', async (req, res) => {
 			products.find(product => product.id === item._id).price * item.amount;
 	});
 
-	res.send('Price: ' + totalPrice);
+	try {
+		await new Order({
+			products: cart.map(item => ({
+				productId: item._id,
+				amount: item.amount
+			})),
+			totalPrice,
+			buyerId: req.user.email
+		}).save();
+
+		res.sendStatus(200);
+	} catch (err) {
+		res.send(err);
+	}
 });
 
 module.exports = router;

@@ -17,7 +17,7 @@ router.post('/register', async (req, res) => {
 		});
 	} catch (err) {
 		if (err.code === 11000) {
-			return res.status(403).send('Email already taken.');
+			return res.status(401).send('Email already taken.');
 		}
 		res.status(400).send(err);
 	}
@@ -43,6 +43,7 @@ router.get('/login/success', (req, res) => {
 	res.send('Login successful.');
 });
 
+// Get the current status, i.e. if the user is logged in or not
 router.get('/status', async (req, res) => {
 	res.json(req.user);
 });
@@ -57,9 +58,15 @@ router.get(
 router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
 	res.redirect(
 		process.env.NODE_ENV === 'production'
-			? 'https://dope-kicks.xyz'
+			? 'https://example.com'
 			: 'http://localhost:3000'
 	);
+});
+
+// Route for loggin out
+router.post('/logout', (req, res) => {
+	req.logOut();
+	res.sendStatus(200);
 });
 
 module.exports = router;
