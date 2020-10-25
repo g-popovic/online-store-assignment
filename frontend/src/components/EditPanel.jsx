@@ -5,10 +5,11 @@ export default function EditPanel(props) {
 	const [name, setName] = useState(props.name);
 	const [price, setPrice] = useState(props.price);
 	const [imagePath, setImagePath] = useState(props.imagePath);
+	const [stock, setStock] = useState(props.stock);
 
 	async function addProduct() {
 		try {
-			await axiosApp.post('/products/new', { name, price, imagePath });
+			await axiosApp.post('/products/new', { name, price, imagePath, stock });
 		} catch (err) {
 			console.log(err);
 			alert('There was an unexpected error.');
@@ -26,7 +27,8 @@ export default function EditPanel(props) {
 			await axiosApp.post('/products/edit/' + props.id, {
 				name,
 				price,
-				imagePath
+				imagePath,
+				stock
 			});
 		} catch (err) {
 			console.log(err);
@@ -59,8 +61,20 @@ export default function EditPanel(props) {
 			<input
 				value={imagePath}
 				onChange={e => setImagePath(e.target.value)}
-				className="form-control"
+				className="form-control mb-2"
 				placeholder="Image Link"
+			/>
+			<label>Left In Stock</label>
+			<input
+				value={stock}
+				onChange={e => {
+					console.log(e.target.value);
+					if (Number(e.target.value) < 0) return setStock(0);
+					setStock(e.target.value);
+				}}
+				className="form-control"
+				placeholder="Stock"
+				type="number"
 			/>
 			<div className="mt-3 text-center">
 				<button className="btn btn-secondary mr-3" onClick={props.close}>

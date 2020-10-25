@@ -43,8 +43,13 @@ export default function App() {
 		setCart(prev => {
 			if (prev.find(item => item._id === id) == null) return;
 
-			prev.find(item => item._id === id).amount =
-				Number(amount) > 0 ? Number(amount) : 1;
+			const item = prev.find(item => item._id === id);
+			item.amount =
+				Number(amount) <= 0
+					? 1
+					: Number(amount) > item.stock
+					? item.stock
+					: Number(amount);
 			return [...prev];
 		});
 	}
@@ -78,6 +83,7 @@ export default function App() {
 					name={panelInfo.name}
 					price={panelInfo.price}
 					imagePath={panelInfo.imagePath}
+					stock={panelInfo.stock}
 				/>
 			) : null}
 			<Switch>

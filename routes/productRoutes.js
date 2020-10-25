@@ -8,7 +8,8 @@ router.post('/new', authRole(ROLES.ADMIN), async (req, res) => {
 	const newProduct = new Product({
 		name: req.body.name,
 		price: req.body.price,
-		imagePath: req.body.imagePath
+		imagePath: req.body.imagePath,
+		stock: req.body.stock
 	});
 
 	try {
@@ -37,17 +38,24 @@ router.get('/', async (req, res) => {
 
 // Route for editing an existing product
 router.post('/edit/:id', authRole(ROLES.ADMIN), async (req, res) => {
-	const { name, price, imagePath } = req.body;
+	const { name, price, imagePath, stock } = req.body;
 
 	// Verify that the new product details are valid
-	if (name == null || price == null || price <= 0 || imagePath == null)
+	if (
+		name == null ||
+		price == null ||
+		price <= 0 ||
+		imagePath == null ||
+		stock == null
+	)
 		return res.sendStatus(400);
 
 	try {
 		const product = await Product.findByIdAndUpdate(req.params.id, {
 			name,
 			price,
-			imagePath
+			imagePath,
+			stock
 		});
 		res.send(product);
 	} catch (err) {

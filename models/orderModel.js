@@ -8,11 +8,14 @@ const itemSchema = new mongoose.Schema(
 	{ _id: false }
 );
 
-const orderSchema = new mongoose.Schema({
-	products: [itemSchema],
-	totalPrice: Number,
-	buyerId: { type: mongoose.Types.ObjectId, ref: 'User' }
-});
+const orderSchema = new mongoose.Schema(
+	{
+		products: [itemSchema],
+		totalPrice: Number,
+		buyerId: { type: mongoose.Types.ObjectId, ref: 'User' }
+	},
+	{ timestamps: true }
+);
 
 const Order = mongoose.model('Order', orderSchema);
 

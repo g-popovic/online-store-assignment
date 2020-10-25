@@ -15,15 +15,22 @@ export default function Product(props) {
 			<div class="card-body">
 				<h5 class="card-title">{props.product.name}</h5>
 				<p>
+					<strong>{props.product.stock}</strong> left in stock
+				</p>
+				<p>
 					Price:{' '}
 					<strong>
 						${(Math.round(props.product.price) / 100).toFixed(2)}
 					</strong>
 				</p>
 				<button
-					onClick={() => props.addToCart(props.product)}
+					onClick={() =>
+						props.product.stock <= 0
+							? null
+							: props.addToCart(props.product)
+					}
 					class="btn btn-primary">
-					Add To Cart
+					{props.product.stock <= 0 ? 'Out of Stock' : 'Add To Cart'}
 				</button>
 				{props.isAdmin ? (
 					<button
