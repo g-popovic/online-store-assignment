@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { ROLES } = require('../config/userRoles');
 
 const cartItemSchema = new mongoose.Schema(
 	{
@@ -10,7 +11,9 @@ const cartItemSchema = new mongoose.Schema(
 
 const userSchema = new mongoose.Schema({
 	email: { type: String, required: true, unique: true },
-	password: { type: String, required: true },
+	role: { type: String, required: true, default: ROLES.BASIC },
+	password: String,
+	googleId: String,
 	cart: [cartItemSchema]
 });
 

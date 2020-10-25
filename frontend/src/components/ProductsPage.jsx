@@ -3,7 +3,7 @@ import Product from './Product';
 import axios from 'axios';
 import axiosApp from '../axiosApp';
 
-export default function ProductsPage({ addToCart, editProduct }) {
+export default function ProductsPage(props) {
 	const [products, setProducts] = useState([]);
 
 	useEffect(() => {
@@ -28,8 +28,9 @@ export default function ProductsPage({ addToCart, editProduct }) {
 				{products.map(product => (
 					<Product
 						product={product}
-						addToCart={addToCart}
-						editProduct={editProduct}
+						addToCart={props.addToCart}
+						editProduct={props.editProduct}
+						isAdmin={props.userRole === 'admin'}
 					/>
 				))}
 			</div>

@@ -2,6 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const passport = require('passport');
+const session = require('express-session');
+const MemoryStore = require('memorystore')(session);
+const flash = require('connect-flash');
+require('./config/passportSetup');
+
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
@@ -19,6 +25,24 @@ app.use(
 				: 'http://localhost:3000'
 	})
 );
+app.use(
+	session({
+		secret: process.env.SESSION_SECRET,
+		resave: false,
+		saveUninitialized: false,
+		store: new MemoryStore({
+			checkPeriod: 15 * 60 * 1000
+		}),
+		cookie: {
+			maxAge: 60 * 24 * 60 * 1000,
+			httpOnly: false,
+			secure: process.env.NODE_ENV === 'production'
+		}
+	})
+);
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
 // Connect to MongoDB Atlas
 mongoose.connect(process.env.MONGODB_ATLAS_URI, {

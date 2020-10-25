@@ -25,11 +25,13 @@ export default function Product(props) {
 					class="btn btn-primary">
 					Add To Cart
 				</button>
-				<button
-					onClick={() => props.editProduct(props.product)}
-					class="btn btn-secondary ml-3">
-					Edit
-				</button>
+				{props.isAdmin ? (
+					<button
+						onClick={() => props.editProduct(props.product)}
+						class="btn btn-secondary ml-3">
+						Edit
+					</button>
+				) : null}
 			</div>
 		</div>
 	);

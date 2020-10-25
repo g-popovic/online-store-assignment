@@ -1,45 +1,65 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
+const passport = require('passport');
 const User = require('../models/userModel');
 
-// Endpoint for creating an account
+// Route for creating an account
 router.post('/register', async (req, res) => {
-	const email = req.body.email;
-	const password = await bcrypt.hash(req.body.password, 10); // Use bcrypt to hash password
-
-	const newUser = new User({
-		email,
-		password
-	});
-
 	try {
-		await newUser.save();
-	} catch (err) {
-		// If email is already taken return a 403, otherwise return error.
-		if (err.code === 11000) return res.status(403).send('Email already taken.');
-		return res.send(err);
-	}
+		const newUser = await new User({
+			email: req.body.email,
+			password: await bcrypt.hash(req.body.password, 10)
+		}).save();
 
-	res.send(newUser);
+		req.login(newUser, err => {
+			if (err) res.send(err);
+			res.send('Successfully registered.');
+		});
+	} catch (err) {
+		if (err.code === 11000) {
+			return res.status(403).send('Email already taken.');
+		}
+		res.status(400).send(err);
+	}
 });
 
-// Endpoint for loggin in
-router.post('/login', async (req, res) => {
-	const email = req.body.email;
-	const password = req.body.password;
+// Route for loggin in
+router.post(
+	'/login',
+	passport.authenticate('local', {
+		successRedirect: '/auth/login/success',
+		failureRedirect: '/auth/login/failed',
+		failureFlash: true
+	})
+);
 
-	// Check if the user exists
-	const existingUser = await User.findOne({ email });
-	if (existingUser == null) return res.status(401).send('Incorrect email.');
+// Failed login route
+router.get('/login/failed', (req, res) => {
+	res.status(401).send(req.flash('message')[0]);
+});
 
-	// Check if the password is correct
-	if (await bcrypt.compare(password, existingUser.password)) {
-		res.send('Successfully logged in.');
-	} else res.send('Incorrect password.');
+// Successful login route
+router.get('/login/success', (req, res) => {
+	res.send('Login successful.');
 });
 
 router.get('/status', async (req, res) => {
-	res.send('idk');
+	res.json(req.user);
+});
+
+// Route for google authentication
+router.get(
+	'/google',
+	passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+// Redirect route after successful google authentication
+router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
+	res.redirect(
+		process.env.NODE_ENV === 'production'
+			? 'https://dope-kicks.xyz'
+			: 'http://localhost:3000'
+	);
 });
 
 module.exports = router;

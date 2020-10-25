@@ -18,10 +18,10 @@ export default function App() {
 		const source = axios.CancelToken.source();
 
 		async function getStatus() {
-			setUserRole(
-				(await axiosApp.get('/auth/status', { cancelToken: source.token }))
-					.data
-			);
+			const userRole = await axiosApp.get('/auth/status', {
+				cancelToken: source.token
+			});
+			setUserRole(userRole.data.role);
 		}
 
 		getStatus();
@@ -64,7 +64,7 @@ export default function App() {
 	return (
 		<Router>
 			<Navbar openPanel={() => setPanelOpen(true)} />
-			{panelOpen ? (
+			{panelOpen && userRole === 'admin' ? (
 				<EditPanel
 					close={() => {
 						setPanelOpen(false);
@@ -84,6 +84,7 @@ export default function App() {
 						<ProductsPage
 							addToCart={addToCart}
 							editProduct={editProduct}
+							userRole={userRole}
 						/>
 					)}
 				/>
