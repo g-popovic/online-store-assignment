@@ -38,4 +38,8 @@ router.post('/login', async (req, res) => {
 	} else res.send('Incorrect password.');
 });
 
+router.get('/status', async (req, res) => {
+	res.send('idk');
+});
+
 module.exports = router;

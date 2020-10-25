@@ -33,6 +33,7 @@ router.get('/', async (req, res) => {
 	res.send(await Product.find({ name }));
 });
 
+// Route for editing an existing product
 router.post('/edit/:id', async (req, res) => {
 	const { name, price, imagePath } = req.body;
 
