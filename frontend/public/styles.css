@@ -69,7 +69,7 @@ nav.navbar {
 	width: 3rem;
 	padding: 0;
 	text-align: center;
-	text-decoration: underline;
+	cursor: pointer;
 	font-weight: 600;
 	border: none;
 }
@@ -106,4 +106,10 @@ nav.navbar {
 
 .nav-item {
 	cursor: pointer;
+}
+
+.sales-container {
+	width: fit-content;
+	max-height: calc(100vh - 14rem);
+	overflow: auto;
 }

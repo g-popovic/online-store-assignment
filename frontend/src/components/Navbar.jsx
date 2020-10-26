@@ -10,9 +10,9 @@ export default function Navbar(props) {
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-			<Link className="navbar-brand" href="/">
+			<a className="navbar-brand" href="/">
 				TripBnb
-			</Link>
+			</a>
 			<button
 				className="navbar-toggler"
 				type="button"
@@ -36,11 +36,18 @@ export default function Navbar(props) {
 						</Link>
 					</li>
 					{props.isAdmin ? (
-						<li className="nav-item">
-							<a onClick={props.openPanel} className="nav-link">
-								New Product
-							</a>
-						</li>
+						<>
+							<li className="nav-item">
+								<Link to="/dashboard" className="nav-link">
+									Dashboard
+								</Link>
+							</li>
+							<li className="nav-item">
+								<a onClick={props.openPanel} className="nav-link">
+									New Product
+								</a>
+							</li>
+						</>
 					) : null}
 					<li className="nav-item">
 						<a className="nav-link" onClick={logout}>

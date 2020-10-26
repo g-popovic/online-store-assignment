@@ -10,8 +10,9 @@ export default function LoginPage() {
 			await axiosApp.post('/auth/login', { email, password });
 			window.location.reload();
 		} catch (err) {
-			if (err.response && err.response.status === 401)
+			if (err.response && err.response.status === 401) {
 				alert(err.response.data);
+			}
 			console.log(err);
 		}
 	}
@@ -21,8 +22,9 @@ export default function LoginPage() {
 			await axiosApp.post('/auth/register', { email, password });
 			window.location.reload();
 		} catch (err) {
-			if (err.response && err.response.status === 401)
+			if (err.response && err.response.status === 401) {
 				alert(err.response.data);
+			} else alert('Something went wrong');
 			console.log(err);
 		}
 	}
@@ -41,7 +43,7 @@ export default function LoginPage() {
 				/>
 				<input
 					className="form-control"
-					type="text"
+					type="password"
 					placeholder="Password"
 					value={password}
 					onChange={e => setPassword(e.target.value)}

@@ -3,10 +3,11 @@ import LoginPage from './LoginPage';
 import Navbar from './Navbar';
 import ProductsPage from './ProductsPage';
 import CartPage from './CartPage';
+import DashboardPage from './DashboardPage';
 import EditPanel from './EditPanel';
 import axios from 'axios';
 import axiosApp from '../axiosApp';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 
 export default function App() {
 	const [userRole, setUserRole] = useState(null);
@@ -109,6 +110,17 @@ export default function App() {
 							cart={cart}
 						/>
 					)}
+				/>
+				<Route
+					exact
+					path="/dashboard"
+					component={() =>
+						userRole === 'admin' ? (
+							<DashboardPage />
+						) : (
+							<Redirect to="/" />
+						)
+					}
 				/>
 				<Route component={() => <h1>Error: 404 Not Found</h1>} />
 			</Switch>

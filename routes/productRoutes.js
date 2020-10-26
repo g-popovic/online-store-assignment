@@ -32,8 +32,15 @@ router.delete('/:id', authRole(ROLES.ADMIN), async (req, res) => {
 // Route for getting all the products
 router.get('/', async (req, res) => {
 	const name = new RegExp(escapeRegex(req.query.name), 'gi');
+	const shouldSortByStock = req.query.shouldSortByStock;
 
-	res.send(await Product.find({ name }));
+	res.send(
+		(
+			await Product.find({ name }).sort(
+				shouldSortByStock ? { stock: -1 } : undefined
+			)
+		).reverse()
+	);
 });
 
 // Route for editing an existing product
