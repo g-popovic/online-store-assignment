@@ -80,9 +80,11 @@ export default function EditPanel(props) {
 				<button className="btn btn-secondary mr-3" onClick={props.close}>
 					Cancel
 				</button>
-				<button className="btn btn-danger mr-3" onClick={deleteProduct}>
-					Delete
-				</button>
+				{props.name == null ? null : (
+					<button className="btn btn-danger mr-3" onClick={deleteProduct}>
+						Delete
+					</button>
+				)}
 				<button
 					className="btn btn-primary"
 					onClick={props.name == null ? addProduct : updateProduct}>
