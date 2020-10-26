@@ -53,7 +53,7 @@ export default function ProductsPage(props) {
 				</div>
 			</div>
 			{props.userRole === 'admin' ? (
-				<label>
+				<label className="mb-4">
 					Lowest Stock First{' '}
 					<input
 						type="checkbox"

@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
+const { authRole, authUser } = require('../middleware/authMiddleware');
+const { ROLES } = require('../config/userRoles');
 const User = require('../models/userModel');
 
 // Route for creating an account
@@ -58,7 +60,7 @@ router.get(
 router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
 	res.redirect(
 		process.env.NODE_ENV === 'production'
-			? 'https://example.com'
+			? 'https://online-store-assignment.herokuapp.com/'
 			: 'http://localhost:3000'
 	);
 });
@@ -67,6 +69,25 @@ router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
 router.post('/logout', (req, res) => {
 	req.logOut();
 	res.sendStatus(200);
+});
+
+router.get('/become-admin/:code', authUser, async (req, res) => {
+	const code = req.params.code;
+
+	if (code === process.env.ADMIN_ACCESS_CODE) {
+		await User.findByIdAndUpdate(req.user.id, { role: ROLES.ADMIN });
+		res.redirect('/auth/become-admin-success');
+	} else {
+		res.redirect('/auth/become-admin-fail');
+	}
+});
+
+router.get('/become-admin-success', authRole(ROLES.ADMIN), (req, res) => {
+	res.send('Admin access granted. You may now return to the website.');
+});
+
+router.get('/become-admin-fail', authRole(ROLES.ADMIN), (req, res) => {
+	res.send('Admin access granted. You may now return to the website.');
 });
 
 module.exports = router;

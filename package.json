@@ -5,7 +5,11 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev-start": "nodemon server.js"
+		"build": "cd frontend && npm run build",
+		"install-frontend": "cd frontend && npm install",
+		"heroku-postbuild": "npm run install-frontend && npm run build",
+		"start": "node server.js",
+		"frontend": "cd frontend && npm start"
 	},
 	"keywords": [],
 	"author": "",

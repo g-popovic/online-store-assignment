@@ -6,6 +6,7 @@ const passport = require('passport');
 const session = require('express-session');
 const MemoryStore = require('memorystore')(session);
 const flash = require('connect-flash');
+const path = require('path');
 require('./config/passportSetup');
 
 // Import routes
@@ -21,7 +22,7 @@ app.use(
 		credentials: true,
 		origin:
 			process.env.NODE_ENV === 'production'
-				? 'https://example.com'
+				? 'https://online-store-assignment.herokuapp.com/'
 				: 'http://localhost:3000'
 	})
 );
@@ -60,5 +61,15 @@ app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
 app.use('/cart', cartRoutes);
 
+// Serve static resources i.e. react build directory
+if (process.env.NODE_ENV === 'production') {
+	app.use(express.static('frontend/build'));
+
+	app.get('*', (req, res) => {
+		res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+	});
+}
+
+// Run server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log('Server running on port ' + PORT));

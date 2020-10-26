@@ -33,7 +33,7 @@ export default function LoginPage() {
 		<div className="login-page-container">
 			<h1>Super Store</h1>
 			<br />
-			<form onSubmit={e => e.preventDefault}>
+			<form onSubmit={e => e.preventDefault()}>
 				<input
 					className="form-control mb-3"
 					type="text"
@@ -50,7 +50,7 @@ export default function LoginPage() {
 				/>
 				<a
 					className="btn btn-primary mt-3"
-					href="http://localhost:5000/auth/google">
+					href="https://online-store-assignment.herokuapp.com/auth/google">
 					Continue With Google
 				</a>
 
