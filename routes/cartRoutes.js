@@ -5,11 +5,18 @@ const { authUser, authRole } = require('../middleware/authMiddleware');
 const { ROLES } = require('../config/userRoles');
 const moment = require('moment');
 const _ = require('lodash');
-const { result } = require('lodash');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { v4: uuid } = require('uuid');
 
 // Route for buying products
 router.post('/purchase', authUser, async (req, res) => {
+	const idempotencyKey = uuid();
+	const token = req.body.token;
+
 	const cart = req.body.cart;
+	if (cart == null || cart[0] == null || cart[0]._id == null || token == null)
+		return res.sendStatus(400);
+
 	const products = await Product.find({
 		_id: { $in: cart.map(item => item._id) }
 	});
@@ -35,21 +42,40 @@ router.post('/purchase', authUser, async (req, res) => {
 		0
 	);
 
-	try {
-		// Create an order
-		await new Order({
-			products: cart.map(item => ({
-				productId: item._id,
-				amount: item.amount
-			})),
-			totalPrice,
-			buyerId: req.user._id
-		}).save();
+	// Checkout with Stripe
+	stripe.customers
+		.create({ email: token.email, source: token.id }) // Create a Stripe customer
+		.then(customer => {
+			stripe.charges
+				.create(
+					{
+						amount: totalPrice,
+						currency: 'eur',
+						customer: customer.id,
+						description: products.length + ' products.'
+					},
+					{ idempotencyKey }
+				)
+				.then(async () => {
+					try {
+						// Create an order upon a successful transaction
+						await new Order({
+							products: cart.map(item => ({
+								productId: item._id,
+								amount: item.amount
+							})),
+							totalPrice,
+							buyerId: req.user._id
+						}).save();
 
-		res.json(idk);
-	} catch (err) {
-		res.send(err);
-	}
+						res.json(idk);
+					} catch (err) {
+						res.send(err);
+					}
+				})
+				.catch(err => res.send(err));
+		})
+		.catch(err => res.send(err));
 });
 
 // Admin only route for getting the day-to-day profits in the last 30 days

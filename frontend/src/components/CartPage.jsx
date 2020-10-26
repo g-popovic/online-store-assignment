@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axiosApp from '../axiosApp';
+import StripeCheckout from 'react-stripe-checkout';
 
 export default function CartPage(props) {
-	async function purchase() {
-		console.log(await axiosApp.post('/cart/purchase', { cart: props.cart }));
-		props.clearCart();
-		alert('Purchase Successful!');
+	const [isLoading, setIsLoading] = useState(false);
+	const publicStripeToken =
+		'pk_test_51HRa5mKDvtytb8inFLTYEJCOD0z05DIXv6a65HvHvsD5IjlDh31UQmqx1MRZFe0ybZWJNVBO6GooMjafXCYf4Nih00XLgKHxrH';
+
+	async function purchase(token) {
+		try {
+			await axiosApp.post('/cart/purchase', {
+				cart: props.cart,
+				token
+			});
+			alert('Purchase Successful!');
+			props.clearCart();
+		} catch (err) {
+			console.log(err);
+			alert('Something went wrong...');
+		}
+		setIsLoading(false);
 	}
 
 	return (
@@ -51,9 +65,25 @@ export default function CartPage(props) {
 					).toFixed(2)}
 				</strong>
 			</p>
-			<button className="btn btn-primary" onClick={purchase}>
-				Purchase
-			</button>
+
+			{props.cart.length ? (
+				isLoading ? (
+					<strong>Loading...</strong>
+				) : (
+					<StripeCheckout
+						stripeKey={publicStripeToken}
+						token={purchase}
+						name="Super Store">
+						<button
+							className="btn btn-primary"
+							onClick={() => setIsLoading(true)}>
+							Purchase
+						</button>
+					</StripeCheckout>
+				)
+			) : (
+				<p>Please add something to cart.</p>
+			)}
 		</div>
 	);
 }

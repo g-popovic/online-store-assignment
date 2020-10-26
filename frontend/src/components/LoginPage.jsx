@@ -50,7 +50,11 @@ export default function LoginPage() {
 				/>
 				<a
 					className="btn btn-primary mt-3"
-					href="https://online-store-assignment.herokuapp.com/auth/google">
+					href={
+						process.env.NODE_ENV === 'production'
+							? 'https://online-store-assignment.herokuapp.com/auth/google'
+							: 'http://localhost:5000/auth/google'
+					}>
 					Continue With Google
 				</a>
 
