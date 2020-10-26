@@ -35,9 +35,7 @@ app.use(
 			checkPeriod: 15 * 60 * 1000
 		}),
 		cookie: {
-			maxAge: 60 * 24 * 60 * 1000,
-			httpOnly: false,
-			secure: process.env.NODE_ENV === 'production'
+			maxAge: 60 * 24 * 60 * 1000
 		}
 	})
 );
