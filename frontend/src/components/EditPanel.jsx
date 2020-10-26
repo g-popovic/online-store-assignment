@@ -6,10 +6,17 @@ export default function EditPanel(props) {
 	const [price, setPrice] = useState(props.price);
 	const [imagePath, setImagePath] = useState(props.imagePath);
 	const [stock, setStock] = useState(props.stock);
+	const [category, setCategory] = useState('misc');
 
 	async function addProduct() {
 		try {
-			await axiosApp.post('/products/new', { name, price, imagePath, stock });
+			await axiosApp.post('/products/new', {
+				name,
+				price,
+				imagePath,
+				stock,
+				category
+			});
 		} catch (err) {
 			console.log(err);
 			alert('There was an unexpected error.');
@@ -28,7 +35,8 @@ export default function EditPanel(props) {
 				name,
 				price,
 				imagePath,
-				stock
+				stock,
+				category
 			});
 		} catch (err) {
 			console.log(err);
@@ -76,6 +84,21 @@ export default function EditPanel(props) {
 				placeholder="Stock"
 				type="number"
 			/>
+			<br />
+			<label className="mr-2" htmlFor="categories">
+				Select Category{' '}
+			</label>
+			<select
+				className="mb-4"
+				name="categories"
+				id="categories"
+				value={category}
+				onChange={e => setCategory(e.target.value)}>
+				<option value="food">Food</option>
+				<option value="misc">Misc</option>
+				<option value="clothes">Clothes</option>
+				<option value="tech">Tech</option>
+			</select>
 			<div className="mt-3 text-center">
 				<button className="btn btn-secondary mr-3" onClick={props.close}>
 					Cancel

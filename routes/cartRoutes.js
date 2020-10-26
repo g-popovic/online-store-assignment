@@ -1,10 +1,7 @@
 const router = require('express').Router();
 const Order = require('../models/orderModel');
 const Product = require('../models/productModel');
-const { authUser, authRole } = require('../middleware/authMiddleware');
-const { ROLES } = require('../config/userRoles');
-const moment = require('moment');
-const _ = require('lodash');
+const { authUser } = require('../middleware/authMiddleware');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { v4: uuid } = require('uuid');
 
@@ -12,11 +9,13 @@ const { v4: uuid } = require('uuid');
 router.post('/purchase', authUser, async (req, res) => {
 	const idempotencyKey = uuid();
 	const token = req.body.token;
-
 	const cart = req.body.cart;
+
+	// Check if the request is valid
 	if (cart == null || cart[0] == null || cart[0]._id == null || token == null)
 		return res.sendStatus(400);
 
+	// Get specified products from database, so the user can't alter their prices
 	const products = await Product.find({
 		_id: { $in: cart.map(item => item._id) }
 	});
@@ -76,38 +75,6 @@ router.post('/purchase', authUser, async (req, res) => {
 				.catch(err => res.send(err));
 		})
 		.catch(err => res.send(err));
-});
-
-// Admin only route for getting the day-to-day profits in the last 30 days
-router.get('/sales-statistics', authRole(ROLES.ADMIN), async (req, res) => {
-	// Create an object which groups all orders made in the same day under the same field
-	const ordersGroupedByDays = _.groupBy(await Order.find(), result =>
-		moment(result.createdAt.getTime()).startOf('day').unix()
-	);
-
-	const now = moment(new Date().getTime()).startOf('day');
-	const profitsPerDay = [];
-	const howManyDays = 31;
-
-	// Get the profits for the past 31 days
-	for (let i = 0; i < howManyDays; i++) {
-		// The timestamp of the current iteration of the loop (that day at midnight)
-		const currentTimestamp = Math.floor(now / 1000) - i * 24 * 60 * 60;
-
-		// The sales of the current iteration a.k.a. current day
-		const currentDaySales = ordersGroupedByDays[currentTimestamp];
-
-		// Calculate the total money earned for that day
-		const profitForTheDay = currentDaySales
-			? currentDaySales.reduce((total, order) => total + order.totalPrice, 0)
-			: 0;
-
-		// Add an array with a timestamp & a corresponding profit amount
-		// to the main array
-		profitsPerDay.push([currentTimestamp, profitForTheDay]);
-	}
-
-	res.send(profitsPerDay);
 });
 
 module.exports = router;

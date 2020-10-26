@@ -13,7 +13,7 @@ export default function DashboardPage() {
 			try {
 				setStats(
 					(
-						await axiosApp.get('/cart/sales-statistics', {
+						await axiosApp.get('/products/sales-statistics', {
 							cancelToken: source.token
 						})
 					).data

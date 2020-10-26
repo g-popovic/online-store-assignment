@@ -13,7 +13,10 @@ export default function Product(props) {
 				}
 			/>
 			<div className="card-body">
-				<h5 className="card-title">{props.product.name}</h5>
+				<h5 className="card-title">
+					{props.product.name}{' '}
+					<small className="text-muted">({props.product.category})</small>
+				</h5>
 				<p>
 					<strong>{props.product.stock}</strong> left in stock
 				</p>

@@ -2,7 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const { authRole, authUser } = require('../middleware/authMiddleware');
-const { ROLES } = require('../config/userRoles');
+const { ROLES } = require('../config/data');
 const User = require('../models/userModel');
 
 // Route for creating an account
