@@ -29,8 +29,8 @@ router.post('/register', async (req, res) => {
 router.post(
 	'/login',
 	passport.authenticate('local', {
-		successRedirect: '/auth/login/success',
-		failureRedirect: '/auth/login/failed',
+		successRedirect: '/api/auth/login/success',
+		failureRedirect: '/api/auth/login/failed',
 		failureFlash: true
 	})
 );
@@ -76,9 +76,9 @@ router.get('/become-admin/:code', authUser, async (req, res) => {
 
 	if (code === process.env.ADMIN_ACCESS_CODE) {
 		await User.findByIdAndUpdate(req.user.id, { role: ROLES.ADMIN });
-		res.redirect('/auth/become-admin-success');
+		res.redirect('/api/auth/become-admin-success');
 	} else {
-		res.redirect('/auth/become-admin-fail');
+		res.redirect('/api/auth/become-admin-fail');
 	}
 });
 

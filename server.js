@@ -55,9 +55,9 @@ connection.on('error', err => console.error(err));
 connection.on('open', () => console.log('Connected to MongoDB Atlas'));
 
 // Connect app to all of the different routes
-app.use('/auth', authRoutes);
-app.use('/products', productRoutes);
-app.use('/cart', cartRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Serve static resources i.e. react build directory
 if (process.env.NODE_ENV === 'production') {
