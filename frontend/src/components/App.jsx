@@ -120,6 +120,7 @@ export default function App() {
 					price={panelInfo.price}
 					imagePath={panelInfo.imagePath}
 					stock={panelInfo.stock}
+					category={panelInfo.category}
 				/>
 			) : null}
 			<Switch>

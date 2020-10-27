@@ -17,6 +17,7 @@ export default function Product(props) {
 					{props.product.name}{' '}
 					<small className="text-muted">({props.product.category})</small>
 				</h5>
+
 				<p>
 					<strong>{props.product.stock}</strong> left in stock
 				</p>

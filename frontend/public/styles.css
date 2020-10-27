@@ -113,3 +113,9 @@ nav.navbar {
 	max-height: calc(100vh - 14rem);
 	overflow: auto;
 }
+
+.card-img-top {
+	height: 18rem;
+	object-fit: cover;
+	object-position: center;
+}

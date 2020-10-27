@@ -6,7 +6,7 @@ export default function EditPanel(props) {
 	const [price, setPrice] = useState(props.price);
 	const [imagePath, setImagePath] = useState(props.imagePath);
 	const [stock, setStock] = useState(props.stock);
-	const [category, setCategory] = useState('misc');
+	const [category, setCategory] = useState(props.category || 'misc');
 
 	async function addProduct() {
 		try {
@@ -54,16 +54,16 @@ export default function EditPanel(props) {
 				className="form-control mb-2"
 				placeholder="Name"
 			/>
-			<label>Price (IN CENTS)</label>
+			<label>Price</label>
 			<input
-				value={price}
+				value={price / 100}
 				onChange={e =>
-					setPrice(Number(e.target.value) > 0 ? e.target.value : 1)
+					setPrice(Number(e.target.value) > 0 ? e.target.value * 100 : 1)
 				}
 				className="form-control mb-2"
 				type="number"
 				min={1}
-				placeholder="Price (IN CENTS)"
+				placeholder="Price"
 			/>
 			<label>Image Link</label>
 			<input

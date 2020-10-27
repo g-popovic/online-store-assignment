@@ -16,7 +16,6 @@
 	"license": "ISC",
 	"dependencies": {
 		"bcrypt": "^5.0.0",
-		"connect-flash": "^0.1.1",
 		"cors": "^2.8.5",
 		"dotenv": "^8.2.0",
 		"ejs": "^3.1.5",
@@ -29,7 +28,6 @@
 		"mongoose": "^5.10.10",
 		"passport": "^0.4.1",
 		"passport-google-oauth20": "^2.0.0",
-		"passport-local": "^1.0.0",
 		"stripe": "^8.117.0",
 		"uuid": "^8.3.1"
 	}

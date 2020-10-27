@@ -100,7 +100,7 @@ router.get('/become-admin-success', authRole(ROLES.ADMIN), (req, res) => {
 	res.send('Admin access granted. You may close this tab.');
 });
 
-router.get('/become-admin-fail', authRole(ROLES.ADMIN), (req, res) => {
+router.get('/become-admin-fail', (req, res) => {
 	res.send('Invalid code.');
 });
 

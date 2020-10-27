@@ -5,7 +5,6 @@ const cors = require('cors');
 const passport = require('passport');
 const session = require('express-session');
 const MemoryStore = require('memorystore')(session);
-const flash = require('connect-flash');
 const path = require('path');
 require('./config/passportSetup');
 
@@ -41,7 +40,6 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
 
 // Connect to MongoDB Atlas
 mongoose.connect(process.env.MONGODB_ATLAS_URI, {
