@@ -81,10 +81,6 @@ router.post('/purchase', authUser, verifyCart, async (req, res) => {
 });
 
 router.post('/update', authUser, verifyCart, async (req, res) => {
-	const cart = req.body.cart;
-	console.log(req.body.cart);
-
-	console.log('we made it past the check');
 	await User.findByIdAndUpdate(req.user._id, { cart: req.body.cart });
 	res.sendStatus(200);
 });

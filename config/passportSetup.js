@@ -11,35 +11,9 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((id, done) => {
 	User.findById(id)
 		.select('-password')
+		.exec()
 		.then(user => done(null, user));
 });
-
-passport.use(
-	new LocalStrategy(
-		{ usernameField: 'email', passReqToCallback: true },
-		async (req, email, password, done) => {
-			const user = await User.findOne({ email: email });
-
-			if (user) {
-				if (
-					user.password &&
-					(await bcrypt.compare(password, user.password))
-				) {
-					// Successful login
-					return done(null, user);
-				} else {
-					return done(
-						null,
-						false,
-						req.flash('message', 'Incorrect password.')
-					);
-				}
-			} else {
-				return done(null, false, req.flash('message', 'Incorrect email.'));
-			}
-		}
-	)
-);
 
 passport.use(
 	new GoogleStrategy(
