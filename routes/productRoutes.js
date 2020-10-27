@@ -139,6 +139,7 @@ function escapeRegex(text) {
 	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
 
+// Determine if the given category is valid
 function isCategoryValid(category) {
 	return (
 		category === CATEGORIES.MISC ||

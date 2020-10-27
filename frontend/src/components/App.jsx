@@ -11,7 +11,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-d
 
 export default function App() {
 	const [userRole, setUserRole] = useState(null);
-	const [cart, setCart] = useState([]);
+	const [cart, setCart] = useState('loading');
 	const [panelOpen, setPanelOpen] = useState(false);
 	const [panelInfo, setPanelInfo] = useState({});
 
@@ -19,10 +19,17 @@ export default function App() {
 		const source = axios.CancelToken.source();
 
 		async function getStatus() {
-			const userRole = await axiosApp.get('/auth/status', {
-				cancelToken: source.token
-			});
-			setUserRole(userRole.data.role);
+			const result = await axios.all([
+				axiosApp.get('/auth/status', {
+					cancelToken: source.token
+				}),
+				axiosApp.get('/cart', {
+					cancelToken: source.token
+				})
+			]);
+			console.log(result);
+			setUserRole(result[0].data.role);
+			setCart(result[1].data);
 		}
 
 		getStatus();
@@ -32,9 +39,37 @@ export default function App() {
 		};
 	}, []);
 
+	useEffect(() => {
+		const source = axios.CancelToken.source();
+
+		async function updateCart() {
+			await axiosApp.post(
+				'/cart/update',
+				{
+					cart: cart.map(item => ({
+						productId: item.productId._id,
+						amount: item.amount
+					}))
+				},
+				{
+					cancelToken: source.token
+				}
+			);
+		}
+
+		if (cart !== 'loading' && cart != null)
+			updateCart()
+				.then()
+				.catch(e => alert('There was an error updating the cart.'));
+
+		return () => {
+			source.cancel();
+		};
+	}, [cart]);
+
 	function addToCart(product) {
-		if (cart.find(item => item._id === product._id) == null) {
-			setCart(prev => [...prev, { ...product, amount: 1 }]);
+		if (cart.find(item => item.productId._id === product._id) == null) {
+			setCart(prev => [...prev, { productId: { ...product }, amount: 1 }]);
 			alert('Added.');
 		} else alert('Item already in cart.');
 	}
@@ -42,14 +77,14 @@ export default function App() {
 	// Handle user changing the amount of a product in the cart
 	function handleCartChange(id, amount) {
 		setCart(prev => {
-			if (prev.find(item => item._id === id) == null) return;
+			if (prev.find(item => item.productId._id === id) == null) return;
 
-			const item = prev.find(item => item._id === id);
+			const item = prev.find(item => item.productId._id === id);
 			item.amount =
 				Number(amount) <= 0
 					? 1
-					: Number(amount) > item.stock
-					? item.stock
+					: Number(amount) > item.productId.stock
+					? item.productId.stock
 					: Number(amount);
 			return [...prev];
 		});
@@ -57,7 +92,7 @@ export default function App() {
 
 	function removeCartItem(id) {
 		setCart(prev => {
-			return prev.filter(item => item._id !== id);
+			return prev.filter(item => item.productId._id !== id);
 		});
 	}
 

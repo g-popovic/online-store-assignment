@@ -6,11 +6,22 @@ export default function CartPage(props) {
 	const [isLoading, setIsLoading] = useState(false);
 	const publicStripeToken =
 		'pk_test_51HRa5mKDvtytb8inFLTYEJCOD0z05DIXv6a65HvHvsD5IjlDh31UQmqx1MRZFe0ybZWJNVBO6GooMjafXCYf4Nih00XLgKHxrH';
+	const totalPrice =
+		props.cart === 'loading' || props.cart == null
+			? 0
+			: props.cart.reduce(
+					(total, item) => total + item.amount * item.productId.price,
+					0
+			  );
 
 	async function purchase(token) {
+		setIsLoading(true);
 		try {
 			await axiosApp.post('/cart/purchase', {
-				cart: props.cart,
+				cart: props.cart.map(item => ({
+					productId: item.productId._id,
+					amount: item.amount
+				})),
 				token
 			});
 			alert('Purchase Successful!');
@@ -18,9 +29,12 @@ export default function CartPage(props) {
 		} catch (err) {
 			console.log(err);
 			alert('Something went wrong...');
+			window.location.reload();
 		}
 		setIsLoading(false);
 	}
+
+	if (props.cart === 'loading' || props.cart == null) return <h3>Loading...</h3>;
 
 	return (
 		<div className="page-container cart-page">
@@ -35,16 +49,27 @@ export default function CartPage(props) {
 					</div>
 					{props.cart.map(item => (
 						<div className="cart-item">
-							<p onClick={() => props.removeCartItem(item._id)}>X</p>
-							<p>{item.name}</p>
-							<p>${(Math.round(item.price) / 100).toFixed(2)}</p>
+							<p
+								onClick={() =>
+									props.removeCartItem(item.productId._id)
+								}>
+								X
+							</p>
+							<p>{item.productId.name}</p>
+							<p>
+								$
+								{(Math.round(item.productId.price) / 100).toFixed(2)}
+							</p>
 							<input
 								type="number"
 								className="form-control"
 								defaultValue={item.amount}
 								min={1}
 								onChange={e => {
-									props.handleChange(item._id, e.target.value);
+									props.handleChange(
+										item.productId._id,
+										e.target.value
+									);
 								}}
 							/>
 						</div>
@@ -52,18 +77,7 @@ export default function CartPage(props) {
 				</div>
 			</div>
 			<p>
-				Total:{' '}
-				<strong>
-					$
-					{(
-						Math.round(
-							props.cart.reduce(
-								(total, item) => total + item.amount * item.price,
-								0
-							)
-						) / 100
-					).toFixed(2)}
-				</strong>
+				Total: <strong>${(Math.round(totalPrice) / 100).toFixed(2)}</strong>
 			</p>
 
 			{props.cart.length ? (
@@ -71,14 +85,11 @@ export default function CartPage(props) {
 					<strong>Loading...</strong>
 				) : (
 					<StripeCheckout
+						amount={totalPrice}
 						stripeKey={publicStripeToken}
 						token={purchase}
 						name="Super Store">
-						<button
-							className="btn btn-primary"
-							onClick={() => setIsLoading(true)}>
-							Purchase
-						</button>
+						<button className="btn btn-primary">Purchase</button>
 					</StripeCheckout>
 				)
 			) : (
